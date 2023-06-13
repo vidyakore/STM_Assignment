@@ -33,7 +33,10 @@ async function scrapeSearchResults(keyword) {
   }
 }
 
-// Usage
+// case 1: no found any link for given keyword
 // const keyword = 'NoSuchElementError: no such element: Unable to locate element: {"method":"xpath","selector":"//*[@id="input"]"}(Session info: chrome=113.0.5672.127)at Object.throwDecodedError (C:\Users\I527305\Desktop\Bits\2nd sem\Software Testing methodologies\STM Lab\Assignment1_WebScraping\node_modules\selenium-webdriver\lib\error.js:524:15) at parseHttpResponse (C:\Users\I527305\Desktop\Bits\2nd sem\Software Testing methodologies\STM Lab\Assignment1_WebScraping\node_modules\selenium-webdriver\lib\http.js:601:13) at Executor.execute (C:\Users\I527305\Desktop\Bits\2nd sem\Software Testing methodologies\STM Lab\Assignment1_WebScraping\node_modules\selenium-webdriver\lib\http.js:529:28) at processTicksAndRejections (node:internal/process/task_queues:96:5) at async Driver.execute (C:\Users\I527305\Desktop\Bits\2nd sem\Software Testing methodologies\STM Lab\Assignment1_WebScraping\node_modules\selenium-webdriver\lib\webdriver.js:745:17) at async scrapeSearchResults (C:\Users\I527305\Desktop\Bits\2nd sem\Software Testing methodologies\STM Lab\Assignment1_WebScraping\top10WebScrape.js:12:23)';
-const keyword = "cloud computing"
+//case 2: 10 links are found for given keyword
+// const keyword = "cloud computing"
+//case 3: 1 link found for given keyword
+const keyword = 'dinkachi chav kay aste';
 scrapeSearchResults(keyword);
