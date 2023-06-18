@@ -34,29 +34,33 @@ async function scrapeSearchResults() {
     try {
       let searchBox = await driver.findElement(By.name('q'));
       let keyword = 'sap';
-      await searchBox.sendKeys(keyword, Key.RETURN);
-      await driver.sleep(2000); // Introduce a 2-second delay
+      keyword = keyword.trim();
+      if(keyword.length === 0 || !keyword || keyword.length > 2048){
+        console.log("Please enter some valid keyword to search");
+      }else{
+        await searchBox.sendKeys(keyword, Key.RETURN);
+        await driver.sleep(2000); // Introduce a 2-second delay
 
-      const searchResults = await driver.findElements(By.css('div.g'));
+        const searchResults = await driver.findElements(By.css('div.g'));
 
-      const results = [];
-      for (let i = 0; i <searchResults.length; i++) {
-        const result = await searchResults[i].findElement(By.css('a'));
-        const url = await result.getAttribute('href');
-        results.push(url);
+        const results = [];
+        for (let i = 0; i <searchResults.length; i++) {
+          const result = await searchResults[i].findElement(By.css('a'));
+          const url = await result.getAttribute('href');
+          results.push(url);
+        }
+
+        resultsUniqueDomains = removeSameDomainUrls(results);
+
+        const finalResults = [];
+        for (let i = 0; i < Math.min(resultsUniqueDomains.length, 10); i++) {
+          finalResults.push(resultsUniqueDomains[i]);
+        }
+
+        const data = JSON.stringify(finalResults, null, 2);
+        fs.writeFileSync('search_results.json', data);
+        console.log('Test Case1 passed : results saved to search_results.json');
       }
-
-      resultsUniqueDomains = removeSameDomainUrls(results);
-
-      const finalResults = [];
-      for (let i = 0; i < Math.min(resultsUniqueDomains.length, 10); i++) {
-        finalResults.push(resultsUniqueDomains[i]);
-      }
-
-      const data = JSON.stringify(finalResults, null, 2);
-      fs.writeFileSync('search_results.json', data);
-      console.log('Test Case1 passed : results saved to search_results.json');
-
     } catch(error) {
       console.log("Error Occured")
     }
