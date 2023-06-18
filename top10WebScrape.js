@@ -1,6 +1,28 @@
 const { Builder, By, Key } = require('selenium-webdriver');
 const fs = require('fs');
 
+function extractDomain(url) {
+  const urlObj = new URL(url);
+  return urlObj.hostname;
+}
+
+function removeSameDomainUrls(urls) {
+  let domains = {};
+  let uniqueUrls = urls.filter(function(url) {
+    // whatever function you're using to parse URLs
+    var domain = extractDomain(url);
+    if (domains[domain]) {
+      // we have seen this domain before, so ignore the URL
+      return false;
+    }
+    // mark domain, retain URL
+    domains[domain] = true;
+    return true;
+  });
+
+  return uniqueUrls;
+}
+
 async function scrapeSearchResults() {
   const driver = await new Builder().forBrowser('chrome').build();
 
@@ -11,20 +33,27 @@ async function scrapeSearchResults() {
     //Test case 1 : 10 links are found for given keyword
     try {
       let searchBox = await driver.findElement(By.name('q'));
-      let keyword = 'cloud computing';
+      let keyword = 'sap';
       await searchBox.sendKeys(keyword, Key.RETURN);
       await driver.sleep(2000); // Introduce a 2-second delay
 
       const searchResults = await driver.findElements(By.css('div.g'));
 
       const results = [];
-      for (let i = 0; i < Math.min(searchResults.length, 10); i++) {
+      for (let i = 0; i <searchResults.length; i++) {
         const result = await searchResults[i].findElement(By.css('a'));
         const url = await result.getAttribute('href');
         results.push(url);
       }
 
-      const data = JSON.stringify(results, null, 2);
+      resultsUniqueDomains = removeSameDomainUrls(results);
+
+      const finalResults = [];
+      for (let i = 0; i < Math.min(resultsUniqueDomains.length, 10); i++) {
+        finalResults.push(resultsUniqueDomains[i]);
+      }
+
+      const data = JSON.stringify(finalResults, null, 2);
       fs.writeFileSync('search_results.json', data);
       console.log('Test Case1 passed : results saved to search_results.json');
 
@@ -49,7 +78,14 @@ async function scrapeSearchResults() {
         results.push(url);
       }
 
-      const data = JSON.stringify(results, null, 2);
+      resultsUniqueDomains = removeSameDomainUrls(results);
+
+      const finalResults = [];
+      for (let i = 0; i < Math.min(resultsUniqueDomains.length, 10); i++) {
+        finalResults.push(resultsUniqueDomains[i]);
+      }
+
+      const data = JSON.stringify(finalResults, null, 2);
       fs.writeFileSync('search_results2.json', data);
       console.log('Test Case2 passed : result saved to search_results2.json');
     } catch(error) {
